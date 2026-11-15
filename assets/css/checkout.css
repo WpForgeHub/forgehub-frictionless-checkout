@@ -17,10 +17,112 @@
 }
 
 .woocommerce-checkout .form-row {
-	margin: 0 !important;
+	margin: 0 0 16px 0 !important;
 	padding: 0 !important;
 	width: 100% !important;
 	float: none !important;
+}
+
+.woocommerce-checkout label {
+	color: #e2e8f0 !important;
+	font-weight: 600 !important;
+	font-size: 13px !important;
+	margin-bottom: 6px !important;
+	display: block !important;
+}
+
+.woocommerce-checkout input.input-text,
+.woocommerce-checkout select {
+	background: #1e293b !important;
+	color: #f8fafc !important;
+	border: 1px solid #334155 !important;
+	border-radius: 8px !important;
+	padding: 10px 14px !important;
+	font-size: 14px !important;
+	width: 100% !important;
+}
+
+.woocommerce-checkout input.input-text:focus,
+.woocommerce-checkout select:focus {
+	border-color: #38bdf8 !important;
+	outline: none !important;
+	box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Order Review & Payment Section — WCAG Dark High Contrast */
+.woocommerce-checkout #order_review_heading {
+	color: #f8fafc !important;
+	font-size: 20px !important;
+	margin-top: 32px !important;
+}
+
+.woocommerce-checkout table.woocommerce-checkout-review-order-table {
+	background: #0f172a !important;
+	border: 1px solid #1e293b !important;
+	border-radius: 10px !important;
+	overflow: hidden !important;
+	color: #f8fafc !important;
+}
+
+.woocommerce-checkout table.woocommerce-checkout-review-order-table th,
+.woocommerce-checkout table.woocommerce-checkout-review-order-table td {
+	border-color: #1e293b !important;
+	color: #cbd5e1 !important;
+	padding: 14px 18px !important;
+}
+
+.woocommerce-checkout table.woocommerce-checkout-review-order-table thead th {
+	background: #1e293b !important;
+	color: #94a3b8 !important;
+	font-size: 12px !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.05em !important;
+}
+
+.woocommerce-checkout table.woocommerce-checkout-review-order-table .order-total th,
+.woocommerce-checkout table.woocommerce-checkout-review-order-table .order-total td {
+	color: #10b981 !important;
+	font-size: 18px !important;
+	font-weight: 800 !important;
+}
+
+/* Payment Box & Privacy Policy Text — Contrast Fix (No More Light Grey Box) */
+.woocommerce-checkout #payment,
+.woocommerce-checkout .woocommerce-checkout-payment {
+	background: #0f172a !important;
+	border: 1px solid #1e293b !important;
+	border-radius: 12px !important;
+	padding: 24px !important;
+	margin-top: 24px !important;
+}
+
+.woocommerce-checkout #payment ul.payment_methods,
+.woocommerce-checkout .woocommerce-checkout-payment ul.wc_payment_methods {
+	background: transparent !important;
+	border-bottom: 1px solid #1e293b !important;
+	padding-bottom: 16px !important;
+	margin-bottom: 16px !important;
+}
+
+.woocommerce-checkout .woocommerce-privacy-policy-text,
+.woocommerce-checkout .woocommerce-privacy-policy-text p,
+.woocommerce-checkout .woocommerce-terms-and-conditions-wrapper,
+.woocommerce-checkout .woocommerce-terms-and-conditions-wrapper p {
+	color: #94a3b8 !important;
+	font-size: 13px !important;
+	line-height: 1.6 !important;
+	margin: 14px 0 !important;
+}
+
+.woocommerce-checkout .woocommerce-privacy-policy-text a,
+.woocommerce-checkout .woocommerce-terms-and-conditions-wrapper a {
+	color: #38bdf8 !important;
+	text-decoration: underline !important;
+	font-weight: 600 !important;
+}
+
+.woocommerce-checkout .woocommerce-privacy-policy-text a:hover {
+	color: #7dd3fc !important;
 }
 
 /* Trust Badges Styling */
@@ -32,8 +134,8 @@
 	gap: 16px;
 	margin-top: 20px;
 	padding: 16px;
-	background: rgba(15, 23, 42, 0.6);
-	border: 1px solid rgba(51, 65, 85, 0.4);
+	background: #1e293b;
+	border: 1px solid #334155;
 	border-radius: 8px;
 }
 
@@ -42,7 +144,7 @@
 	align-items: center;
 	gap: 6px;
 	font-size: 13px;
-	color: #94a3b8;
+	color: #cbd5e1;
 }
 
 .wpfh-fc-badge-icon {
@@ -55,10 +157,19 @@
 
 /* Button Pulse Animation on Hover */
 #place_order {
-	transition: all 0.2s ease-in-out;
+	background: linear-gradient(135deg, #10b981, #059669) !important;
+	color: #ffffff !important;
+	font-weight: 800 !important;
+	font-size: 16px !important;
+	padding: 16px 28px !important;
+	border-radius: 8px !important;
+	border: none !important;
+	width: 100% !important;
+	cursor: pointer !important;
+	transition: all 0.2s ease-in-out !important;
 }
 
 #place_order:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+	transform: translateY(-1px) !important;
+	box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
 }
