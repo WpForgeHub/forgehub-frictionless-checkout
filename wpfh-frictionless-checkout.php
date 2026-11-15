@@ -3,7 +3,7 @@
  * Plugin Name:       WPFH Frictionless Checkout for WooCommerce
  * Plugin URI:        https://wpforgehub.com/plugins/wpfh-frictionless-checkout/
  * Description:       Ultra-fast, 4-field checkout for digital products and SaaS. Removes address friction, auto-detects country via GeoIP/Cloudflare, and enables 1-click $0 lead capture.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            WPForgeHub
  * Author URI:        https://wpforgehub.com
  * License:           GPL-2.0+
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WPFH_FC_VERSION', '1.0.0' );
+define( 'WPFH_FC_VERSION', '1.1.0' );
 define( 'WPFH_FC_FILE', __FILE__ );
 define( 'WPFH_FC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPFH_FC_URL', plugin_dir_url( __FILE__ ) );
@@ -54,16 +54,27 @@ if ( ! function_exists( 'wpfh_fc_fs' ) ) {
 						),
 					),
 				) );
+			} else {
+				// Fallback object for Free / Filter-based Pro distribution
+				$wpfh_fc_fs = new class {
+					public function can_use_premium_code() {
+						return (bool) apply_filters( 'fs_can_use_premium_code__wpfh-frictionless-checkout', false );
+					}
+					public function is__premium_only() { return false; }
+					public function is_plan( $plan ) {
+						return (bool) apply_filters( 'fs_is_plan__wpfh-frictionless-checkout', false, $plan );
+					}
+					public function get_upgrade_url() {
+						return 'https://wpforgehub.com/plugins/wpfh-frictionless-checkout/#pricing';
+					}
+				};
 			}
 		}
 
 		return $wpfh_fc_fs;
 	}
 
-	// Initialize Freemius if present
-	if ( file_exists( WPFH_FC_PATH . 'freemius/start.php' ) ) {
-		wpfh_fc_fs();
-	}
+	wpfh_fc_fs();
 }
 
 /**
@@ -112,11 +123,36 @@ final class WPFH_Frictionless_Checkout {
 		require_once WPFH_FC_PATH . 'includes/class-wpfh-fc-free-capture.php';
 		require_once WPFH_FC_PATH . 'includes/class-wpfh-fc-admin.php';
 
-		// Instantiate modules
+		// Instantiate Free modules
 		WPFH_FC_GeoIP::get_instance();
 		WPFH_FC_Checkout::get_instance();
 		WPFH_FC_Free_Capture::get_instance();
 		WPFH_FC_Admin::get_instance();
+
+		// Instantiate Pro modules when licensed
+		if ( function_exists( 'wpfh_fc_fs' ) && wpfh_fc_fs()->can_use_premium_code() ) {
+			$pro_express = WPFH_FC_PATH . 'includes/pro/class-wpfh-fc-express-buy.php';
+			$pro_vies    = WPFH_FC_PATH . 'includes/pro/class-wpfh-fc-eu-vat.php';
+			$pro_abandon = WPFH_FC_PATH . 'includes/pro/class-wpfh-fc-abandonment.php';
+			$pro_badges  = WPFH_FC_PATH . 'includes/pro/class-wpfh-fc-custom-badges.php';
+
+			if ( file_exists( $pro_express ) ) {
+				require_once $pro_express;
+				WPFH_FC_Express_Buy::get_instance();
+			}
+			if ( file_exists( $pro_vies ) ) {
+				require_once $pro_vies;
+				WPFH_FC_EU_VAT::get_instance();
+			}
+			if ( file_exists( $pro_abandon ) ) {
+				require_once $pro_abandon;
+				WPFH_FC_Abandonment::get_instance();
+			}
+			if ( file_exists( $pro_badges ) ) {
+				require_once $pro_badges;
+				WPFH_FC_Custom_Badges::get_instance();
+			}
+		}
 	}
 
 	public function woocommerce_missing_notice() {
