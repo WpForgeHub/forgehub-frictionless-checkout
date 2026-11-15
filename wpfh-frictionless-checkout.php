@@ -3,7 +3,7 @@
  * Plugin Name:       WPFH Frictionless Checkout for WooCommerce
  * Plugin URI:        https://wpforgehub.com/plugins/wpfh-frictionless-checkout/
  * Description:       Ultra-fast, 4-field checkout for digital products and SaaS. Removes address friction, auto-detects country via GeoIP/Cloudflare, and enables 1-click $0 lead capture.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            WPForgeHub
  * Author URI:        https://wpforgehub.com
  * License:           GPL-2.0+
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WPFH_FC_VERSION', '1.1.0' );
+define( 'WPFH_FC_VERSION', '1.1.1' );
 define( 'WPFH_FC_FILE', __FILE__ );
 define( 'WPFH_FC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPFH_FC_URL', plugin_dir_url( __FILE__ ) );
@@ -58,10 +58,12 @@ if ( ! function_exists( 'wpfh_fc_fs' ) ) {
 				// Fallback object for Free / Filter-based Pro distribution
 				$wpfh_fc_fs = new class {
 					public function can_use_premium_code() {
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 						return (bool) apply_filters( 'fs_can_use_premium_code__wpfh-frictionless-checkout', false );
 					}
 					public function is__premium_only() { return false; }
 					public function is_plan( $plan ) {
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 						return (bool) apply_filters( 'fs_is_plan__wpfh-frictionless-checkout', false, $plan );
 					}
 					public function get_upgrade_url() {
@@ -107,7 +109,7 @@ final class WPFH_Frictionless_Checkout {
 	}
 
 	public function init() {
-		load_plugin_textdomain( 'wpfh-frictionless-checkout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		// Note: load_plugin_textdomain is intentionally omitted as WordPress.org automatically loads translations since WP 4.6.
 
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
