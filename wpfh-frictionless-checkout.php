@@ -39,10 +39,10 @@ if ( ! function_exists( 'wpfh_fc_fs' ) ) {
 
 			if ( function_exists( 'fs_dynamic_init' ) ) {
 				$wpfh_fc_fs = fs_dynamic_init( array(
-					'id'             => '17961',
+					'id'             => '45082',
 					'slug'           => 'wpfh-frictionless-checkout',
 					'type'           => 'plugin',
-					'public_key'     => 'pk_dummy_fc_placeholder_key',
+					'public_key'     => 'pk_56291fa562e162ad646487ee9c46f',
 					'is_premium'     => false,
 					'has_addons'     => false,
 					'has_paid_plans' => true,
