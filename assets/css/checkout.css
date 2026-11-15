@@ -1,0 +1,64 @@
+/**
+ * WPFH Frictionless Checkout Styles
+ */
+
+/* Responsive 2x2 Field Grid */
+.woocommerce-checkout .woocommerce-billing-fields__field-wrapper {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+@media (max-width: 640px) {
+	.woocommerce-checkout .woocommerce-billing-fields__field-wrapper {
+		grid-template-columns: 1fr;
+		gap: 12px;
+	}
+}
+
+.woocommerce-checkout .form-row {
+	margin: 0 !important;
+	padding: 0 !important;
+	width: 100% !important;
+	float: none !important;
+}
+
+/* Trust Badges Styling */
+.wpfh-fc-trust-badges {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-top: 20px;
+	padding: 16px;
+	background: rgba(15, 23, 42, 0.6);
+	border: 1px solid rgba(51, 65, 85, 0.4);
+	border-radius: 8px;
+}
+
+.wpfh-fc-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	color: #94a3b8;
+}
+
+.wpfh-fc-badge-icon {
+	font-size: 15px;
+}
+
+.wpfh-fc-badge-text {
+	font-weight: 500;
+}
+
+/* Button Pulse Animation on Hover */
+#place_order {
+	transition: all 0.2s ease-in-out;
+}
+
+#place_order:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
