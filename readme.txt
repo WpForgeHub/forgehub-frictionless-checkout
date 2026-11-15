@@ -4,7 +4,7 @@ Tags: woocommerce, checkout, frictionless, digital downloads, saas checkout
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,13 @@ This plugin is specifically optimized for digital, downloadable, and virtual pro
 Yes! It is fully tested and declares full compatibility with WooCommerce High-Performance Order Storage.
 
 == Changelog ==
+
+= 1.1.0 =
+* Feature (Pro): 1-Click Buy Links engine (?wpfh_buy=ID&coupon=CODE) with direct express checkout redirect.
+* Feature (Pro): EU B2B VIES VAT live validation with automated cross-border zero-rating (reverse charge).
+* Feature (Pro): On-blur cart abandonment capture with 1-click cart restoration tokens and webhook notifications.
+* Feature (Pro): Custom Trust Badge designer with configurable security guarantees and SVG badges.
+* Enhancement: Freemius license filter integration (fs_can_use_premium_code__wpfh-frictionless-checkout).
 
 = 1.0.0 =
 * Initial public release.

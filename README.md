@@ -3,6 +3,7 @@
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)](https://wordpress.org/)
 [![WooCommerce HPOS](https://img.shields.io/badge/WooCommerce%20HPOS-Compatible-green.svg)](https://woocommerce.com/)
+[![Release](https://img.shields.io/badge/Release-v1.1.0-purple.svg)](https://github.com/WpForgeHub/wpfh-frictionless-checkout/releases/tag/v1.1.0)
 
 **WPFH Frictionless Checkout** transforms bloated WooCommerce checkouts into ultra-fast, 4-field checkout experiences optimized for digital products, WordPress plugins, software downloads, and SaaS subscriptions.
 
