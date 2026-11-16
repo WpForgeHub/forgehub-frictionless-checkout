@@ -31,18 +31,18 @@ class WPFH_FC_Custom_Badges {
         $default_badges = array(
             array(
                 'icon'  => '🔒',
-                'title' => __( '256-Bit SSL Encryption', 'wpfh-frictionless-checkout' ),
-                'desc'  => __( 'End-to-end encrypted checkout powered by Stripe.', 'wpfh-frictionless-checkout' ),
+                'title' => __( '256-Bit SSL Encryption', 'forgehub-frictionless-checkout' ),
+                'desc'  => __( 'End-to-end encrypted checkout powered by Stripe.', 'forgehub-frictionless-checkout' ),
             ),
             array(
                 'icon'  => '⚡',
-                'title' => __( 'Instant Digital Delivery', 'wpfh-frictionless-checkout' ),
-                'desc'  => __( 'Access your plugin license & zip download in seconds.', 'wpfh-frictionless-checkout' ),
+                'title' => __( 'Instant Digital Delivery', 'forgehub-frictionless-checkout' ),
+                'desc'  => __( 'Access your plugin license & zip download in seconds.', 'forgehub-frictionless-checkout' ),
             ),
             array(
                 'icon'  => '🛡️',
-                'title' => __( '14-Day Money Back Guarantee', 'wpfh-frictionless-checkout' ),
-                'desc'  => __( '100% risk-free. No questions asked refund policy.', 'wpfh-frictionless-checkout' ),
+                'title' => __( '14-Day Money Back Guarantee', 'forgehub-frictionless-checkout' ),
+                'desc'  => __( '100% risk-free. No questions asked refund policy.', 'forgehub-frictionless-checkout' ),
             ),
         );
 

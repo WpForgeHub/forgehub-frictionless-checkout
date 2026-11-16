@@ -28,13 +28,13 @@ class WPFH_FC_Admin {
 	}
 
 	public function add_settings_tab( $tabs ) {
-		$tabs['wpfh_fc'] = __( 'Frictionless Checkout', 'wpfh-frictionless-checkout' );
+		$tabs['wpfh_fc'] = __( 'Frictionless Checkout', 'forgehub-frictionless-checkout' );
 		return $tabs;
 	}
 
 	public function add_action_links( $links ) {
-		$settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=wpfh_fc' ) ) . '">' . __( 'Settings', 'wpfh-frictionless-checkout' ) . '</a>';
-		$pro_link      = '<a href="https://wpforgehub.com/plugins/wpfh-frictionless-checkout/" style="color:#10b981;font-weight:700;" target="_blank">' . __( 'Upgrade to Pro', 'wpfh-frictionless-checkout' ) . '</a>';
+		$settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=wpfh_fc' ) ) . '">' . __( 'Settings', 'forgehub-frictionless-checkout' ) . '</a>';
+		$pro_link      = '<a href="https://wpforgehub.com/plugins/wpfh-frictionless-checkout/" style="color:#10b981;font-weight:700;" target="_blank">' . __( 'Upgrade to Pro', 'forgehub-frictionless-checkout' ) . '</a>';
 		array_unshift( $links, $settings_link, $pro_link );
 		return $links;
 	}
@@ -42,48 +42,48 @@ class WPFH_FC_Admin {
 	private function get_settings() {
 		return array(
 			array(
-				'title' => __( 'Frictionless Checkout Settings', 'wpfh-frictionless-checkout' ),
+				'title' => __( 'Frictionless Checkout Settings', 'forgehub-frictionless-checkout' ),
 				'type'  => 'title',
-				'desc'  => __( 'Optimize WooCommerce checkout conversion rates by stripping address friction and auto-detecting location.', 'wpfh-frictionless-checkout' ),
+				'desc'  => __( 'Optimize WooCommerce checkout conversion rates by stripping address friction and auto-detecting location.', 'forgehub-frictionless-checkout' ),
 				'id'    => 'wpfh_fc_general_options',
 			),
 			array(
-				'title'   => __( 'Enable 4-Field Checkout', 'wpfh-frictionless-checkout' ),
-				'desc'    => __( 'Strip street, city, state, postal code, phone, company, and order notes from checkout.', 'wpfh-frictionless-checkout' ),
+				'title'   => __( 'Enable 4-Field Checkout', 'forgehub-frictionless-checkout' ),
+				'desc'    => __( 'Strip street, city, state, postal code, phone, company, and order notes from checkout.', 'forgehub-frictionless-checkout' ),
 				'id'      => 'wpfh_fc_enable_frictionless',
 				'default' => 'yes',
 				'type'    => 'checkbox',
 			),
 			array(
-				'title'   => __( 'Auto-Detect Country', 'wpfh-frictionless-checkout' ),
-				'desc'    => __( 'Detect country automatically from Cloudflare / GeoIP headers while keeping country selector visible.', 'wpfh-frictionless-checkout' ),
+				'title'   => __( 'Auto-Detect Country', 'forgehub-frictionless-checkout' ),
+				'desc'    => __( 'Detect country automatically from Cloudflare / GeoIP headers while keeping country selector visible.', 'forgehub-frictionless-checkout' ),
 				'id'      => 'wpfh_fc_enable_geoip',
 				'default' => 'yes',
 				'type'    => 'checkbox',
 			),
 			array(
-				'title'   => __( '1-Click Free Lead Capture', 'wpfh-frictionless-checkout' ),
-				'desc'    => __( 'Automatically complete $0 orders instantly and skip payment gateway redirection.', 'wpfh-frictionless-checkout' ),
+				'title'   => __( '1-Click Free Lead Capture', 'forgehub-frictionless-checkout' ),
+				'desc'    => __( 'Automatically complete $0 orders instantly and skip payment gateway redirection.', 'forgehub-frictionless-checkout' ),
 				'id'      => 'wpfh_fc_enable_free_capture',
 				'default' => 'yes',
 				'type'    => 'checkbox',
 			),
 			array(
-				'title'   => __( 'Show Trust Badges', 'wpfh-frictionless-checkout' ),
-				'desc'    => __( 'Display security and instant delivery badges below the place order button.', 'wpfh-frictionless-checkout' ),
+				'title'   => __( 'Show Trust Badges', 'forgehub-frictionless-checkout' ),
+				'desc'    => __( 'Display security and instant delivery badges below the place order button.', 'forgehub-frictionless-checkout' ),
 				'id'      => 'wpfh_fc_show_trust_badges',
 				'default' => 'yes',
 				'type'    => 'checkbox',
 			),
 			array(
-				'title'    => __( 'Free Order Destination', 'wpfh-frictionless-checkout' ),
-				'desc'     => __( 'Where to redirect customers after completing a free order.', 'wpfh-frictionless-checkout' ),
+				'title'    => __( 'Free Order Destination', 'forgehub-frictionless-checkout' ),
+				'desc'     => __( 'Where to redirect customers after completing a free order.', 'forgehub-frictionless-checkout' ),
 				'id'       => 'wpfh_fc_free_redirect',
 				'default'  => 'my_account_downloads',
 				'type'     => 'select',
 				'options'  => array(
-					'my_account_downloads' => __( 'Customer Portal - Downloads Tab', 'wpfh-frictionless-checkout' ),
-					'thank_you'            => __( 'Standard WooCommerce Thank You Page', 'wpfh-frictionless-checkout' ),
+					'my_account_downloads' => __( 'Customer Portal - Downloads Tab', 'forgehub-frictionless-checkout' ),
+					'thank_you'            => __( 'Standard WooCommerce Thank You Page', 'forgehub-frictionless-checkout' ),
 				),
 			),
 			array(

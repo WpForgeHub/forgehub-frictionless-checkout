@@ -35,8 +35,8 @@ class WPFH_FC_EU_VAT {
 
     public function inject_vat_field( $fields ) {
         $fields['billing']['billing_vat_id'] = array(
-            'label'       => __( 'EU VAT Number (Optional for B2B)', 'wpfh-frictionless-checkout' ),
-            'placeholder' => __( 'e.g. DE123456789 or FR12345678901', 'wpfh-frictionless-checkout' ),
+            'label'       => __( 'EU VAT Number (Optional for B2B)', 'forgehub-frictionless-checkout' ),
+            'placeholder' => __( 'e.g. DE123456789 or FR12345678901', 'forgehub-frictionless-checkout' ),
             'required'    => false,
             'class'       => array( 'form-row-wide', 'wpfh-fc-vat-row' ),
             'clear'       => true,
@@ -87,7 +87,7 @@ class WPFH_FC_EU_VAT {
 
         $raw_vat = strtoupper( preg_replace( '/[^A-Za-z0-9]/', '', $_POST['vat_id'] ?? '' ) );
         if ( strlen( $raw_vat ) < 4 ) {
-            wp_send_json_error( array( 'valid' => false, 'message' => __( 'VAT ID is too short.', 'wpfh-frictionless-checkout' ) ) );
+            wp_send_json_error( array( 'valid' => false, 'message' => __( 'VAT ID is too short.', 'forgehub-frictionless-checkout' ) ) );
         }
 
         $country = substr( $raw_vat, 0, 2 );
@@ -97,7 +97,7 @@ class WPFH_FC_EU_VAT {
         $eu_countries = array( 'AT','BE','BG','CY','CZ','DE','DK','EE','EL','ES','FI','FR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK' );
 
         if ( ! in_array( $country, $eu_countries, true ) ) {
-            wp_send_json_error( array( 'valid' => false, 'message' => __( 'Country prefix is not a recognized EU member state.', 'wpfh-frictionless-checkout' ) ) );
+            wp_send_json_error( array( 'valid' => false, 'message' => __( 'Country prefix is not a recognized EU member state.', 'forgehub-frictionless-checkout' ) ) );
         }
 
         // Live VIES API query with timeout
@@ -134,13 +134,13 @@ class WPFH_FC_EU_VAT {
                 'valid'   => true,
                 'vat_id'  => $raw_vat,
                 'name'    => $company_name,
-                'message' => __( 'Valid EU VAT number. Reverse-charge tax exemption applied.', 'wpfh-frictionless-checkout' ),
+                'message' => __( 'Valid EU VAT number. Reverse-charge tax exemption applied.', 'forgehub-frictionless-checkout' ),
             ) );
         }
 
         wp_send_json_error( array(
             'valid'   => false,
-            'message' => __( 'VIES verification failed: Invalid VAT number for this jurisdiction.', 'wpfh-frictionless-checkout' ),
+            'message' => __( 'VIES verification failed: Invalid VAT number for this jurisdiction.', 'forgehub-frictionless-checkout' ),
         ) );
     }
 
@@ -166,7 +166,7 @@ class WPFH_FC_EU_VAT {
             $company = $order->get_meta( '_vat_company_name' );
             ?>
             <p>
-                <strong><?php esc_html_e( 'EU VAT ID:', 'wpfh-frictionless-checkout' ); ?></strong>
+                <strong><?php esc_html_e( 'EU VAT ID:', 'forgehub-frictionless-checkout' ); ?></strong>
                 <code><?php echo esc_html( $vat_id ); ?></code>
                 <?php if ( $reverse_charge ) : ?>
                     <span style="background:#065f46; color:#a7f3d0; padding:2px 6px; border-radius:4px; font-size:11px; font-weight:700;">REVERSE CHARGE (0%)</span>

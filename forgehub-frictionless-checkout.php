@@ -1,26 +1,27 @@
 <?php
 /**
- * Plugin Name:       WPFH Frictionless Checkout for WooCommerce
- * Plugin URI:        https://wpforgehub.com/plugins/wpfh-frictionless-checkout/
+ * Plugin Name:       Frictionless Checkout
+ * Plugin URI:        https://wpforgehub.com/plugins/frictionless-checkout/
  * Description:       Ultra-fast, 4-field checkout for digital products and SaaS. Removes address friction, auto-detects country via GeoIP/Cloudflare, and enables 1-click $0 lead capture.
- * Version:           1.1.1
- * Author:            WPForgeHub
- * Author URI:        https://wpforgehub.com
- * License:           GPL-2.0+
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       wpfh-frictionless-checkout
- * Domain Path:       /languages
+ * Version:           1.1.2
  * Requires at least: 6.0
+ * Tested up to:      7.1
  * Requires PHP:      7.4
  * WC requires at least: 7.0
  * WC tested up to:   9.4
+ * Author:            WPForgeHub
+ * Author URI:        https://wpforgehub.com
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       forgehub-frictionless-checkout
+ * Domain Path:       /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WPFH_FC_VERSION', '1.1.1' );
+define( 'WPFH_FC_VERSION', '1.1.2' );
 define( 'WPFH_FC_FILE', __FILE__ );
 define( 'WPFH_FC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPFH_FC_URL', plugin_dir_url( __FILE__ ) );
@@ -47,7 +48,7 @@ if ( ! function_exists( 'wpfh_fc_fs' ) ) {
 					'has_addons'     => false,
 					'has_paid_plans' => true,
 					'menu'           => array(
-						'slug'       => 'wpfh-frictionless-checkout',
+						'slug'       => 'forgehub-frictionless-checkout',
 						'first-path' => 'admin.php?page=wc-settings&tab=wpfh_fc',
 						'parent'     => array(
 							'slug' => 'woocommerce',
@@ -160,7 +161,7 @@ final class WPFH_Frictionless_Checkout {
 	public function woocommerce_missing_notice() {
 		?>
 		<div class="notice notice-error">
-			<p><?php esc_html_e( 'WPFH Frictionless Checkout requires WooCommerce to be installed and active.', 'wpfh-frictionless-checkout' ); ?></p>
+			<p><?php esc_html_e( 'Frictionless Checkout requires WooCommerce to be installed and active.', 'forgehub-frictionless-checkout' ); ?></p>
 		</div>
 		<?php
 	}

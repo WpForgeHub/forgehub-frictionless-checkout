@@ -137,7 +137,7 @@ class WPFH_FC_Abandonment {
         $lead_data = get_transient( 'wpfh_fc_cart_' . $token );
 
         if ( empty( $lead_data ) || empty( $lead_data['items'] ) ) {
-            wc_add_notice( __( 'Your saved cart session has expired. Please select your items again.', 'wpfh-frictionless-checkout' ), 'notice' );
+            wc_add_notice( __( 'Your saved cart session has expired. Please select your items again.', 'forgehub-frictionless-checkout' ), 'notice' );
             return;
         }
 
@@ -146,7 +146,7 @@ class WPFH_FC_Abandonment {
             foreach ( $lead_data['items'] as $item ) {
                 WC()->cart->add_to_cart( $item['product_id'], $item['quantity'] );
             }
-            wc_add_notice( __( '🛒 Your previous cart items have been successfully restored!', 'wpfh-frictionless-checkout' ), 'success' );
+            wc_add_notice( __( '🛒 Your previous cart items have been successfully restored!', 'forgehub-frictionless-checkout' ), 'success' );
             wp_safe_redirect( wc_get_checkout_url() );
             exit;
         }

@@ -96,9 +96,9 @@ class WPFH_FC_Checkout {
 	 */
 	public function custom_order_button_text( $text ) {
 		if ( WC()->cart && 0.0 == WC()->cart->total ) {
-			return __( 'Complete Free Download', 'wpfh-frictionless-checkout' );
+			return __( 'Complete Free Download', 'forgehub-frictionless-checkout' );
 		}
-		return __( 'Complete Order & Get Access', 'wpfh-frictionless-checkout' );
+		return __( 'Complete Order & Get Access', 'forgehub-frictionless-checkout' );
 	}
 
 	/**
@@ -139,15 +139,15 @@ class WPFH_FC_Checkout {
 		<div class="wpfh-fc-trust-badges">
 			<div class="wpfh-fc-badge">
 				<span class="wpfh-fc-badge-icon">⚡</span>
-				<span class="wpfh-fc-badge-text"><?php esc_html_e( 'Instant Digital Access', 'wpfh-frictionless-checkout' ); ?></span>
+				<span class="wpfh-fc-badge-text"><?php esc_html_e( 'Instant Digital Access', 'forgehub-frictionless-checkout' ); ?></span>
 			</div>
 			<div class="wpfh-fc-badge">
 				<span class="wpfh-fc-badge-icon">🔒</span>
-				<span class="wpfh-fc-badge-text"><?php esc_html_e( '256-Bit SSL Encrypted', 'wpfh-frictionless-checkout' ); ?></span>
+				<span class="wpfh-fc-badge-text"><?php esc_html_e( '256-Bit SSL Encrypted', 'forgehub-frictionless-checkout' ); ?></span>
 			</div>
 			<div class="wpfh-fc-badge">
 				<span class="wpfh-fc-badge-icon">🛡️</span>
-				<span class="wpfh-fc-badge-text"><?php esc_html_e( '14-Day Money-Back Guarantee', 'wpfh-frictionless-checkout' ); ?></span>
+				<span class="wpfh-fc-badge-text"><?php esc_html_e( '14-Day Money-Back Guarantee', 'forgehub-frictionless-checkout' ); ?></span>
 			</div>
 		</div>
 		<?php

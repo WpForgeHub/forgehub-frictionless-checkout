@@ -77,7 +77,7 @@ class WPFH_FC_Express_Buy {
     public function render_buy_button_shortcode( $atts ) {
         $atts = shortcode_atts( array(
             'id'     => 0,
-            'text'   => __( '⚡ Instant Checkout', 'wpfh-frictionless-checkout' ),
+            'text'   => __( '⚡ Instant Checkout', 'forgehub-frictionless-checkout' ),
             'coupon' => '',
             'class'  => 'button wpfh-express-buy-btn',
         ), $atts, 'wpfh_buy_button' );

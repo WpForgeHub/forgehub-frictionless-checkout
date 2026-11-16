@@ -49,18 +49,15 @@ class WPFH_FC_Free_Capture {
 		}
 
 		if ( 0.0 == $order->get_total() ) {
-			// Auto complete free orders
-			$order->set_payment_method( 'wpfh_fc_free' );
-			$order->set_payment_method_title( __( 'Free Digital Download', 'wpfh-frictionless-checkout' ) );
-			$order->payment_complete();
-			$order->update_status( 'completed', __( 'Order auto-completed by WPFH Frictionless Checkout.', 'wpfh-frictionless-checkout' ) );
-
-			// Ensure customer account is properly associated if guest checkout with new email
+			// Ensure customer account is properly associated before completing payment
 			$customer_id = $order->get_customer_id();
 			if ( ! $customer_id && $order->get_billing_email() ) {
 				$user = get_user_by( 'email', $order->get_billing_email() );
 				if ( ! $user && 'yes' === get_option( 'woocommerce_enable_signup_and_login_from_checkout', 'yes' ) ) {
 					$username = sanitize_user( current( explode( '@', $order->get_billing_email() ) ), true );
+					if ( empty( $username ) || username_exists( $username ) ) {
+						$username = 'cust_' . wp_generate_password( 6, false );
+					}
 					$password = wp_generate_password();
 					$new_user_id = wp_create_user( $username, $password, $order->get_billing_email() );
 
@@ -81,6 +78,17 @@ class WPFH_FC_Free_Capture {
 					$order->set_customer_id( $user->ID );
 					$order->save();
 				}
+			}
+
+			// Auto complete free orders
+			$order->set_payment_method( 'wpfh_fc_free' );
+			$order->set_payment_method_title( __( 'Free Digital Download', 'forgehub-frictionless-checkout' ) );
+			$order->payment_complete();
+			$order->update_status( 'completed', __( 'Order auto-completed by WPFH Frictionless Checkout.', 'forgehub-frictionless-checkout' ) );
+
+			// Explicitly grant downloadable product permissions to this order and customer
+			if ( function_exists( 'wc_downloadable_product_permissions' ) ) {
+				wc_downloadable_product_permissions( $order->get_id(), true );
 			}
 		}
 	}
