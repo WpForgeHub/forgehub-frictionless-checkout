@@ -1,10 +1,10 @@
-=== Frictionless Checkout ===
+=== ForgeHub Frictionless Checkout ===
 Contributors: wpforgehub
 Tags: woocommerce, checkout, frictionless, digital downloads, saas checkout
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,10 @@ Yes! It is fully tested and declares full compatibility with WooCommerce High-Pe
 
 == Changelog ==
 
+
+= 1.1.3 =
+* Rename: plugin is now "ForgeHub Frictionless Checkout" (ForgeHub naming standard).
+* Fix: Plugins screen now shows a consistent "Settings" link.
 = 1.1.0 =
 * Feature (Pro): 1-Click Buy Links engine (?wpfh_buy=ID&coupon=CODE) with direct express checkout redirect.
 * Feature (Pro): EU B2B VIES VAT live validation with automated cross-border zero-rating (reverse charge).
