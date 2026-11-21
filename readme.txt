@@ -4,7 +4,7 @@ Tags: woocommerce, checkout, frictionless, digital downloads, saas checkout
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,9 @@ This plugin is specifically optimized for digital, downloadable, and virtual pro
 Yes! It is fully tested and declares full compatibility with WooCommerce High-Performance Order Storage.
 
 == Changelog ==
+
+= 1.1.4 =
+* Fix paid order numeric total check in checkout.js, preserve Pro EU VAT field, fix Pro Abandoned Cart token, wire GeoIP/Free Capture & physical shipping guards
 
 
 = 1.1.3 =

@@ -3,7 +3,7 @@
  * Plugin Name:       ForgeHub Frictionless Checkout
  * Plugin URI:        https://wpforgehub.com/plugins/frictionless-checkout/
  * Description:       Ultra-fast, 4-field checkout for digital products and SaaS. Removes address friction, auto-detects country via GeoIP/Cloudflare, and enables 1-click $0 lead capture.
- * Version:           1.1.3
+ * Version:           1.1.4
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * WC requires at least: 7.0
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WPFH_FC_VERSION', '1.1.3' );
+define( 'WPFH_FC_VERSION', '1.1.4' );
 define( 'WPFH_FC_FILE', __FILE__ );
 define( 'WPFH_FC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPFH_FC_URL', plugin_dir_url( __FILE__ ) );
