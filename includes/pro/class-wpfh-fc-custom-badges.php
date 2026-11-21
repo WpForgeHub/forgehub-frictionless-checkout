@@ -24,6 +24,10 @@ class WPFH_FC_Custom_Badges {
     }
 
     private function __construct() {
+        // Replace Free trust badges so they are never rendered twice.
+        if ( class_exists( 'WPFH_FC_Checkout' ) ) {
+            remove_action( 'woocommerce_review_order_after_submit', array( WPFH_FC_Checkout::get_instance(), 'render_trust_badges' ), 10 );
+        }
         add_action( 'woocommerce_review_order_after_submit', array( $this, 'render_custom_trust_badges' ), 10 );
     }
 
@@ -32,25 +36,51 @@ class WPFH_FC_Custom_Badges {
             array(
                 'icon'  => '🔒',
                 'title' => __( '256-Bit SSL Encryption', 'forgehub-frictionless-checkout' ),
-                'desc'  => __( 'End-to-end encrypted checkout powered by Stripe.', 'forgehub-frictionless-checkout' ),
+                'desc'  => __( 'End-to-end encrypted checkout for safe payments.', 'forgehub-frictionless-checkout' ),
             ),
             array(
                 'icon'  => '⚡',
                 'title' => __( 'Instant Digital Delivery', 'forgehub-frictionless-checkout' ),
-                'desc'  => __( 'Access your plugin license & zip download in seconds.', 'forgehub-frictionless-checkout' ),
+                'desc'  => __( 'Access your digital files right after checkout.', 'forgehub-frictionless-checkout' ),
             ),
             array(
                 'icon'  => '🛡️',
-                'title' => __( '14-Day Money Back Guarantee', 'forgehub-frictionless-checkout' ),
+                'title' => __( '14-Day Money-Back Guarantee', 'forgehub-frictionless-checkout' ),
                 'desc'  => __( '100% risk-free. No questions asked refund policy.', 'forgehub-frictionless-checkout' ),
             ),
         );
+
+        $raw_text = trim( (string) get_option( 'wpfh_fc_custom_badges_text', '' ) );
+        if ( '' !== $raw_text ) {
+            $parsed = array();
+            $lines  = preg_split( '/\r\n|\r|\n/', $raw_text );
+            foreach ( $lines as $line ) {
+                $line = trim( $line );
+                if ( '' === $line ) {
+                    continue;
+                }
+                $parts = array_map( 'trim', explode( '|', $line ) );
+                if ( count( $parts ) >= 2 ) {
+                    $parsed[] = array(
+                        'icon'  => $parts[0] ?: '🔒',
+                        'title' => $parts[1],
+                        'desc'  => $parts[2] ?? '',
+                    );
+                }
+            }
+            if ( ! empty( $parsed ) ) {
+                return $parsed;
+            }
+        }
 
         $saved = get_option( 'wpfh_fc_custom_badges', array() );
         return ! empty( $saved ) && is_array( $saved ) ? $saved : $default_badges;
     }
 
     public function render_custom_trust_badges() {
+        if ( 'yes' !== get_option( 'wpfh_fc_show_trust_badges', 'yes' ) ) {
+            return;
+        }
         $badges = $this->get_badges();
         if ( empty( $badges ) ) {
             return;

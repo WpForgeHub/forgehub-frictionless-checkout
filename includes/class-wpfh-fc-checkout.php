@@ -37,12 +37,21 @@ class WPFH_FC_Checkout {
 			return $fields;
 		}
 
-		// Keep only First Name, Last Name, Country, Email
-		$allowed_billing = array(
-			'billing_first_name',
-			'billing_last_name',
-			'billing_country',
-			'billing_email',
+		// Never strip address or shipping fields when the cart requires physical shipping.
+		if ( function_exists( 'WC' ) && WC()->cart && WC()->cart->needs_shipping() ) {
+			return $fields;
+		}
+
+		// Keep only First Name, Last Name, Country, Email (plus any explicitly allowed Pro fields).
+		$allowed_billing = apply_filters(
+			'wpfh_fc_allowed_billing_fields',
+			array(
+				'billing_first_name',
+				'billing_last_name',
+				'billing_country',
+				'billing_email',
+				'billing_vat_id',
+			)
 		);
 
 		if ( isset( $fields['billing'] ) && is_array( $fields['billing'] ) ) {
@@ -106,24 +115,31 @@ class WPFH_FC_Checkout {
 	 */
 	public function enqueue_assets() {
 		if ( is_checkout() ) {
+			$css_path = WPFH_FC_PATH . 'assets/css/checkout.css';
+			$js_path  = WPFH_FC_PATH . 'assets/js/checkout.js';
+			$css_ver  = file_exists( $css_path ) ? filemtime( $css_path ) : WPFH_FC_VERSION;
+			$js_ver   = file_exists( $js_path ) ? filemtime( $js_path ) : WPFH_FC_VERSION;
+
 			wp_enqueue_style(
 				'wpfh-fc-checkout',
 				WPFH_FC_URL . 'assets/css/checkout.css',
 				array(),
-				WPFH_FC_VERSION
+				$css_ver
 			);
 
 			wp_enqueue_script(
 				'wpfh-fc-checkout',
 				WPFH_FC_URL . 'assets/js/checkout.js',
 				array( 'jquery' ),
-				WPFH_FC_VERSION,
+				$js_ver,
 				true
 			);
 
 			wp_localize_script( 'wpfh-fc-checkout', 'wpfh_fc_vars', array(
-				'ajax_url'   => admin_url( 'admin-ajax.php' ),
-				'is_zero'    => ( WC()->cart && 0.0 == WC()->cart->total ) ? 1 : 0,
+				'ajax_url'         => admin_url( 'admin-ajax.php' ),
+				'is_zero'          => ( WC()->cart && 0.0 === (float) WC()->cart->total ) ? 1 : 0,
+				'free_button_text' => __( 'Complete Free Download', 'forgehub-frictionless-checkout' ),
+				'paid_button_text' => __( 'Complete Order & Get Access', 'forgehub-frictionless-checkout' ),
 			) );
 		}
 	}

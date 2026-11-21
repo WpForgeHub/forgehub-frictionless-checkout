@@ -25,7 +25,7 @@ class WPFH_FC_EU_VAT {
     }
 
     private function __construct() {
-        add_filter( 'woocommerce_checkout_fields', array( $this, 'inject_vat_field' ), 20 );
+        add_filter( 'woocommerce_checkout_fields', array( $this, 'inject_vat_field' ), 1005 );
         add_action( 'woocommerce_after_checkout_billing_form', array( $this, 'render_vat_client_script' ) );
         add_action( 'wp_ajax_wpfh_fc_validate_vat', array( $this, 'ajax_validate_vat' ) );
         add_action( 'wp_ajax_nopriv_wpfh_fc_validate_vat', array( $this, 'ajax_validate_vat' ) );
@@ -59,6 +59,15 @@ class WPFH_FC_EU_VAT {
                 clearTimeout(vatTimer);
                 if (vat.length < 5) {
                     $('#wpfh-vat-status-message').hide();
+                    vatTimer = setTimeout(function() {
+                        $.post('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+                            action: 'wpfh_fc_validate_vat',
+                            vat_id: '',
+                            _ajax_nonce: '<?php echo esc_js( wp_create_nonce( 'wpfh_fc_vat_nonce' ) ); ?>'
+                        }, function() {
+                            $('body').trigger('update_checkout');
+                        });
+                    }, 300);
                     return;
                 }
                 vatTimer = setTimeout(function() {
@@ -66,14 +75,14 @@ class WPFH_FC_EU_VAT {
                     $.post('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
                         action: 'wpfh_fc_validate_vat',
                         vat_id: vat,
-                        _ajax_nonce: '<?php echo wp_create_nonce( 'wpfh_fc_vat_nonce' ); ?>'
+                        _ajax_nonce: '<?php echo esc_js( wp_create_nonce( 'wpfh_fc_vat_nonce' ) ); ?>'
                     }, function(res) {
                         if (res.success && res.data.valid) {
-                            $('#wpfh-vat-status-message').css({'background':'#064e3b', 'color':'#34d399'}).text('✓ Valid EU VAT (' + (res.data.name || 'Company Verified') + '). Reverse-charge applied (0% VAT)!');
-                            $('body').trigger('update_checkout');
+                            $('#wpfh-vat-status-message').css({'background':'#064e3b', 'color':'#34d399'}).text('✓ ' + (res.data.message || 'Valid EU VAT.'));
                         } else {
-                            $('#wpfh-vat-status-message').css({'background':'#450a0a', 'color':'#f87171'}).text('⚠️ ' + (res.data.message || 'Invalid EU VAT format. Standard tax will apply.'));
+                            $('#wpfh-vat-status-message').css({'background':'#450a0a', 'color':'#f87171'}).text('⚠️ ' + ((res.data && res.data.message) ? res.data.message : 'Invalid EU VAT. Standard tax will apply.'));
                         }
+                        $('body').trigger('update_checkout');
                     });
                 }, 600);
             });
@@ -82,77 +91,124 @@ class WPFH_FC_EU_VAT {
         <?php
     }
 
+    private function clear_vat_exemption() {
+        if ( function_exists( 'WC' ) ) {
+            if ( WC()->customer ) {
+                WC()->customer->set_is_vat_exempt( false );
+            }
+            if ( WC()->session ) {
+                WC()->session->set( 'wpfh_fc_validated_vat', null );
+            }
+        }
+    }
+
     public function ajax_validate_vat() {
         check_ajax_referer( 'wpfh_fc_vat_nonce' );
 
-        $raw_vat = strtoupper( preg_replace( '/[^A-Za-z0-9]/', '', $_POST['vat_id'] ?? '' ) );
+        $raw_input = isset( $_POST['vat_id'] ) ? sanitize_text_field( wp_unslash( $_POST['vat_id'] ) ) : '';
+        $raw_vat   = strtoupper( preg_replace( '/[^A-Za-z0-9]/', '', $raw_input ) );
+
+        if ( '' === $raw_vat ) {
+            $this->clear_vat_exemption();
+            wp_send_json_success( array( 'valid' => false, 'cleared' => true ) );
+        }
+
         if ( strlen( $raw_vat ) < 4 ) {
+            $this->clear_vat_exemption();
             wp_send_json_error( array( 'valid' => false, 'message' => __( 'VAT ID is too short.', 'forgehub-frictionless-checkout' ) ) );
         }
 
         $country = substr( $raw_vat, 0, 2 );
         $number  = substr( $raw_vat, 2 );
 
-        // European Union member state codes
+        // European Union member state codes (EL is Greece in VIES).
         $eu_countries = array( 'AT','BE','BG','CY','CZ','DE','DK','EE','EL','ES','FI','FR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PL','PT','RO','SE','SI','SK' );
 
         if ( ! in_array( $country, $eu_countries, true ) ) {
+            $this->clear_vat_exemption();
             wp_send_json_error( array( 'valid' => false, 'message' => __( 'Country prefix is not a recognized EU member state.', 'forgehub-frictionless-checkout' ) ) );
         }
 
-        // Live VIES API query with timeout
+        // Live VIES API query with timeout — never blindly exempt on failure/timeout.
         $endpoint = sprintf( 'https://ec.europa.eu/taxation_customs/vies/rest-api/ms/%s/vat/%s', $country, $number );
-        $response = wp_remote_get( $endpoint, array( 'timeout' => 4 ) );
+        $response = wp_remote_get( $endpoint, array( 'timeout' => 5 ) );
 
-        $is_valid = false;
-        $company_name = '';
-
-        if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
-            $data = json_decode( wp_remote_retrieve_body( $response ), true );
-            if ( ! empty( $data['isValid'] ) ) {
-                $is_valid = true;
-                $company_name = sanitize_text_field( $data['name'] ?? '' );
-            }
-        } else {
-            // Regex fallback if VIES API is experiencing temporary EU maintenance
-            if ( preg_match( '/^[0-9A-Za-z\+\*\.]{2,12}$/', $number ) ) {
-                $is_valid = true;
-                $company_name = 'EU Registered Entity (Format Verified)';
-            }
+        if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+            $this->clear_vat_exemption();
+            wp_send_json_error( array(
+                'valid'   => false,
+                'message' => __( 'EU VIES verification service is temporarily unavailable. Standard tax will apply.', 'forgehub-frictionless-checkout' ),
+            ) );
         }
 
-        if ( $is_valid && function_exists( 'WC' ) && WC()->customer ) {
-            // Apply reverse charge tax exemption for cross-border buyer
+        $data         = json_decode( wp_remote_retrieve_body( $response ), true );
+        $is_valid     = ! empty( $data['isValid'] );
+        $company_name = sanitize_text_field( $data['name'] ?? '' );
+
+        if ( ! $is_valid ) {
+            $this->clear_vat_exemption();
+            wp_send_json_error( array(
+                'valid'   => false,
+                'message' => __( 'VIES verification failed: Invalid VAT number for this jurisdiction.', 'forgehub-frictionless-checkout' ),
+            ) );
+        }
+
+        // Cross-border check: EU reverse charge only applies when buyer country differs from store base country.
+        $base_country = ( function_exists( 'WC' ) && isset( WC()->countries ) ) ? strtoupper( WC()->countries->get_base_country() ) : '';
+        $buyer_iso    = ( 'EL' === $country ) ? 'GR' : $country;
+        $is_domestic  = ( ! empty( $base_country ) && $buyer_iso === $base_country );
+
+        if ( function_exists( 'WC' ) && WC()->customer && WC()->session ) {
+            if ( $is_domestic ) {
+                WC()->customer->set_is_vat_exempt( false );
+                WC()->session->set( 'wpfh_fc_validated_vat', array(
+                    'vat_id'         => $raw_vat,
+                    'company_name'   => $company_name,
+                    'reverse_charge' => false,
+                    'timestamp'      => current_time( 'mysql' ),
+                ) );
+                wp_send_json_success( array(
+                    'valid'   => true,
+                    'vat_id'  => $raw_vat,
+                    'name'    => $company_name,
+                    'message' => __( 'Valid domestic VAT number recorded. Standard domestic VAT applies.', 'forgehub-frictionless-checkout' ),
+                ) );
+            }
+
             WC()->customer->set_is_vat_exempt( true );
             WC()->session->set( 'wpfh_fc_validated_vat', array(
-                'vat_id'       => $raw_vat,
-                'company_name' => $company_name,
-                'timestamp'    => current_time( 'mysql' ),
+                'vat_id'         => $raw_vat,
+                'company_name'   => $company_name,
+                'reverse_charge' => true,
+                'timestamp'      => current_time( 'mysql' ),
             ) );
 
             wp_send_json_success( array(
                 'valid'   => true,
                 'vat_id'  => $raw_vat,
                 'name'    => $company_name,
-                'message' => __( 'Valid EU VAT number. Reverse-charge tax exemption applied.', 'forgehub-frictionless-checkout' ),
+                'message' => __( 'Valid EU VAT number. Reverse-charge tax exemption (0% VAT) applied.', 'forgehub-frictionless-checkout' ),
             ) );
         }
 
+        $this->clear_vat_exemption();
         wp_send_json_error( array(
             'valid'   => false,
-            'message' => __( 'VIES verification failed: Invalid VAT number for this jurisdiction.', 'forgehub-frictionless-checkout' ),
+            'message' => __( 'Unable to update tax session.', 'forgehub-frictionless-checkout' ),
         ) );
     }
 
     public function save_vat_order_meta( $order, $data ) {
-        $vat_id = sanitize_text_field( $_POST['billing_vat_id'] ?? '' );
+        $vat_id = isset( $_POST['billing_vat_id'] ) ? strtoupper( preg_replace( '/[^A-Za-z0-9]/', '', sanitize_text_field( wp_unslash( $_POST['billing_vat_id'] ) ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout nonce already verified.
         if ( ! empty( $vat_id ) ) {
             $order->update_meta_data( '_billing_vat_id', $vat_id );
 
             if ( function_exists( 'WC' ) && WC()->session ) {
                 $session_vat = WC()->session->get( 'wpfh_fc_validated_vat' );
                 if ( ! empty( $session_vat ) && $session_vat['vat_id'] === $vat_id ) {
-                    $order->update_meta_data( '_vat_reverse_charge', 'yes' );
+                    if ( ! empty( $session_vat['reverse_charge'] ) ) {
+                        $order->update_meta_data( '_vat_reverse_charge', 'yes' );
+                    }
                     $order->update_meta_data( '_vat_company_name', $session_vat['company_name'] );
                 }
             }

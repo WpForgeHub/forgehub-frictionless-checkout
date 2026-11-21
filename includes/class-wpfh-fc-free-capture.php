@@ -30,6 +30,9 @@ class WPFH_FC_Free_Capture {
 	 * Total 0 carts do not require payment gateway
 	 */
 	public function cart_needs_payment( $needs_payment, $cart ) {
+		if ( 'yes' !== get_option( 'wpfh_fc_enable_free_capture', 'yes' ) ) {
+			return $needs_payment;
+		}
 		if ( 0.0 == $cart->total ) {
 			return false;
 		}
@@ -40,6 +43,10 @@ class WPFH_FC_Free_Capture {
 	 * Auto-complete free orders immediately upon placement
 	 */
 	public function process_free_order( $order_id, $posted_data, $order ) {
+		if ( 'yes' !== get_option( 'wpfh_fc_enable_free_capture', 'yes' ) ) {
+			return;
+		}
+
 		if ( ! $order ) {
 			$order = wc_get_order( $order_id );
 		}
@@ -59,9 +66,13 @@ class WPFH_FC_Free_Capture {
 						$username = 'cust_' . wp_generate_password( 6, false );
 					}
 					$password = wp_generate_password();
-					$new_user_id = wp_create_user( $username, $password, $order->get_billing_email() );
+					$new_user_id = function_exists( 'wc_create_new_customer' )
+						? wc_create_new_customer( $order->get_billing_email(), $username, $password )
+						: wp_create_user( $username, $password, $order->get_billing_email() );
 
 					if ( ! is_wp_error( $new_user_id ) ) {
+						$new_user = new WP_User( $new_user_id );
+						$new_user->set_role( 'customer' );
 						update_user_meta( $new_user_id, 'first_name', $order->get_billing_first_name() );
 						update_user_meta( $new_user_id, 'last_name', $order->get_billing_last_name() );
 						update_user_meta( $new_user_id, 'billing_country', $order->get_billing_country() );
@@ -84,7 +95,7 @@ class WPFH_FC_Free_Capture {
 			$order->set_payment_method( 'wpfh_fc_free' );
 			$order->set_payment_method_title( __( 'Free Digital Download', 'forgehub-frictionless-checkout' ) );
 			$order->payment_complete();
-			$order->update_status( 'completed', __( 'Order auto-completed by WPFH Frictionless Checkout.', 'forgehub-frictionless-checkout' ) );
+			$order->update_status( 'completed', __( 'Order auto-completed by Frictionless Checkout.', 'forgehub-frictionless-checkout' ) );
 
 			// Explicitly grant downloadable product permissions to this order and customer
 			if ( function_exists( 'wc_downloadable_product_permissions' ) ) {
@@ -97,6 +108,9 @@ class WPFH_FC_Free_Capture {
 	 * Seamless redirect after successful zero-dollar capture
 	 */
 	public function custom_redirect_after_checkout( $result, $order_id ) {
+		if ( 'yes' !== get_option( 'wpfh_fc_enable_free_capture', 'yes' ) ) {
+			return $result;
+		}
 		$order = wc_get_order( $order_id );
 		if ( $order && 0.0 == $order->get_total() ) {
 			// Check if custom redirect URL configured in settings

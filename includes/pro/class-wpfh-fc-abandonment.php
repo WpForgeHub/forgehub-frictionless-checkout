@@ -63,7 +63,7 @@ class WPFH_FC_Abandonment {
     public function ajax_capture_lead() {
         check_ajax_referer( 'wpfh_fc_lead_nonce' );
 
-        $email = sanitize_email( $_POST['email'] ?? '' );
+        $email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
         if ( ! is_email( $email ) ) {
             wp_send_json_error( 'Invalid email' );
         }
@@ -76,19 +76,22 @@ class WPFH_FC_Abandonment {
         foreach ( WC()->cart->get_cart() as $cart_item_key => $values ) {
             $product = $values['data'];
             $items[] = array(
-                'product_id' => $values['product_id'],
-                'name'       => $product->get_name(),
-                'quantity'   => $values['quantity'],
-                'subtotal'   => $values['line_subtotal'],
+                'product_id'   => absint( $values['product_id'] ),
+                'variation_id' => absint( $values['variation_id'] ?? 0 ),
+                'variation'    => is_array( $values['variation'] ?? null ) ? $values['variation'] : array(),
+                'name'         => $product->get_name(),
+                'quantity'     => absint( $values['quantity'] ),
+                'subtotal'     => $values['line_subtotal'],
             );
         }
 
-        $token = wp_generate_password( 24, false, false );
+        // Always lowercase hex token so sanitize_key() on restore matches 100%.
+        $token = bin2hex( random_bytes( 16 ) );
         $lead_data = array(
             'token'      => $token,
             'email'      => $email,
-            'first_name' => sanitize_text_field( $_POST['first_name'] ?? '' ),
-            'last_name'  => sanitize_text_field( $_POST['last_name'] ?? '' ),
+            'first_name' => sanitize_text_field( wp_unslash( $_POST['first_name'] ?? '' ) ),
+            'last_name'  => sanitize_text_field( wp_unslash( $_POST['last_name'] ?? '' ) ),
             'total'      => WC()->cart->get_total( 'edit' ),
             'currency'   => get_woocommerce_currency(),
             'items'      => $items,
@@ -129,11 +132,13 @@ class WPFH_FC_Abandonment {
     }
 
     public function handle_restore_cart() {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- single-use recovery token in email/webhook link.
         if ( empty( $_GET['wpfh_restore_cart'] ) ) {
             return;
         }
 
-        $token = sanitize_key( $_GET['wpfh_restore_cart'] );
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- see above.
+        $token     = sanitize_key( wp_unslash( $_GET['wpfh_restore_cart'] ) );
         $lead_data = get_transient( 'wpfh_fc_cart_' . $token );
 
         if ( empty( $lead_data ) || empty( $lead_data['items'] ) ) {
@@ -144,7 +149,12 @@ class WPFH_FC_Abandonment {
         if ( function_exists( 'WC' ) && WC()->cart ) {
             WC()->cart->empty_cart();
             foreach ( $lead_data['items'] as $item ) {
-                WC()->cart->add_to_cart( $item['product_id'], $item['quantity'] );
+                WC()->cart->add_to_cart(
+                    absint( $item['product_id'] ),
+                    max( 1, absint( $item['quantity'] ?? 1 ) ),
+                    absint( $item['variation_id'] ?? 0 ),
+                    is_array( $item['variation'] ?? null ) ? $item['variation'] : array()
+                );
             }
             wc_add_notice( __( '🛒 Your previous cart items have been successfully restored!', 'forgehub-frictionless-checkout' ), 'success' );
             wp_safe_redirect( wc_get_checkout_url() );

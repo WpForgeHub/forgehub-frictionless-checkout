@@ -79,6 +79,10 @@ class WPFH_FC_GeoIP {
 	 * Filter default checkout billing country
 	 */
 	public function get_default_country( $default ) {
+		if ( 'yes' !== get_option( 'wpfh_fc_enable_geoip', 'yes' ) ) {
+			return $default;
+		}
+
 		// If user is logged in and has saved billing country, respect it
 		if ( is_user_logged_in() ) {
 			$saved = get_user_meta( get_current_user_id(), 'billing_country', true );

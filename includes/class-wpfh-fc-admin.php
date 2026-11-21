@@ -33,14 +33,19 @@ class WPFH_FC_Admin {
 	}
 
 	public function add_action_links( $links ) {
-		$settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=wpfh_fc' ) ) . '">' . __( 'Settings', 'forgehub-frictionless-checkout' ) . '</a>';
-		$pro_link      = '<a href="https://wpforgehub.com/plugins/wpfh-frictionless-checkout/" style="color:#10b981;font-weight:700;" target="_blank">' . __( 'Upgrade to Pro', 'forgehub-frictionless-checkout' ) . '</a>';
-		array_unshift( $links, $settings_link, $pro_link );
+		$settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=wpfh_fc' ) ) . '">' . esc_html__( 'Settings', 'forgehub-frictionless-checkout' ) . '</a>';
+		$is_pro        = function_exists( 'wpfh_fc_fs' ) && wpfh_fc_fs()->can_use_premium_code();
+		if ( ! $is_pro ) {
+			$pro_link = '<a href="' . esc_url( wpfh_fc_fs()->get_upgrade_url() ) . '" style="color:#10b981;font-weight:700;" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Upgrade to Pro', 'forgehub-frictionless-checkout' ) . '</a>';
+			array_unshift( $links, $settings_link, $pro_link );
+		} else {
+			array_unshift( $links, $settings_link );
+		}
 		return $links;
 	}
 
 	private function get_settings() {
-		return array(
+		$fields = array(
 			array(
 				'title' => __( 'Frictionless Checkout Settings', 'forgehub-frictionless-checkout' ),
 				'type'  => 'title',
@@ -49,7 +54,7 @@ class WPFH_FC_Admin {
 			),
 			array(
 				'title'   => __( 'Enable 4-Field Checkout', 'forgehub-frictionless-checkout' ),
-				'desc'    => __( 'Strip street, city, state, postal code, phone, company, and order notes from checkout.', 'forgehub-frictionless-checkout' ),
+				'desc'    => __( 'Strip street, city, state, postal code, phone, company, and order notes for digital/virtual carts.', 'forgehub-frictionless-checkout' ),
 				'id'      => 'wpfh_fc_enable_frictionless',
 				'default' => 'yes',
 				'type'    => 'checkbox',
@@ -86,16 +91,53 @@ class WPFH_FC_Admin {
 					'thank_you'            => __( 'Standard WooCommerce Thank You Page', 'forgehub-frictionless-checkout' ),
 				),
 			),
-			array(
-				'type' => 'sectionend',
-				'id'   => 'wpfh_fc_general_options',
-			),
 		);
+
+		$is_pro = function_exists( 'wpfh_fc_fs' ) && wpfh_fc_fs()->can_use_premium_code();
+		if ( $is_pro ) {
+			$fields[] = array(
+				'title'       => __( 'Cart Abandonment Webhook URL (Pro)', 'forgehub-frictionless-checkout' ),
+				'desc'        => __( 'Optional webhook endpoint (Zapier, Make, n8n, CRM) to receive abandoned cart leads and 1-click recovery links.', 'forgehub-frictionless-checkout' ),
+				'id'          => 'wpfh_fc_abandonment_webhook_url',
+				'default'     => '',
+				'type'        => 'url',
+				'placeholder' => 'https://hooks.example.com/abandoned-cart',
+			);
+			$fields[] = array(
+				'title'       => __( 'Custom Trust Badges (Pro)', 'forgehub-frictionless-checkout' ),
+				'desc'        => __( 'One badge per line using format: Icon | Title | Description. Leave blank for default Pro badges.', 'forgehub-frictionless-checkout' ),
+				'id'          => 'wpfh_fc_custom_badges_text',
+				'default'     => '',
+				'type'        => 'textarea',
+				'css'         => 'min-width:450px;min-height:90px;',
+				'placeholder' => "🔒 | 256-Bit SSL Encryption | End-to-end encrypted checkout.\n⚡ | Instant Digital Delivery | Access your files immediately.",
+			);
+		}
+
+		$fields[] = array(
+			'type' => 'sectionend',
+			'id'   => 'wpfh_fc_general_options',
+		);
+
+		return $fields;
 	}
 
 	public function render_settings() {
+		// Warn store owner if Checkout page uses WooCommerce Block Checkout.
+		if ( function_exists( 'wc_get_page_id' ) && function_exists( 'has_block' ) ) {
+			$checkout_page_id = wc_get_page_id( 'checkout' );
+			if ( $checkout_page_id > 0 && has_block( 'woocommerce/checkout', $checkout_page_id ) ) {
+				echo '<div class="notice notice-warning inline"><p>';
+				echo '<strong>' . esc_html__( 'Block Checkout Detected:', 'forgehub-frictionless-checkout' ) . '</strong> ';
+				echo esc_html__( 'Your Checkout page currently uses the WooCommerce Checkout Block. Classic field stripping requires the [woocommerce_checkout] shortcode.', 'forgehub-frictionless-checkout' );
+				echo '</p></div>';
+			}
+		}
+
 		woocommerce_admin_fields( $this->get_settings() );
-		$this->render_pro_upsell();
+		if ( ! function_exists( 'wpfh_fc_fs' ) || ! wpfh_fc_fs()->can_use_premium_code() ) {
+			$this->render_pro_upsell();
+		}
 	}
 
 	public function save_settings() {
