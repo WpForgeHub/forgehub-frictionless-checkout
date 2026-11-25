@@ -152,7 +152,7 @@ class WPFH_FC_Admin {
 					<h3 style="margin:0;font-size:18px;color:#f8fafc;">🚀 WPFH Frictionless Checkout Pro</h3>
 					<p style="margin:4px 0 0 0;color:#94a3b8;font-size:13px;">Maximize your revenue with enterprise SaaS checkout enhancements.</p>
 				</div>
-				<a href="https://wpforgehub.com/plugins/wpfh-frictionless-checkout/" target="_blank" style="background:#10b981;color:#ffffff;padding:8px 16px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block;">Upgrade to Pro &rarr;</a>
+				<a href="<?php echo esc_url( function_exists( 'wpfh_fc_fs' ) ? wpfh_fc_fs()->get_upgrade_url() : 'https://wpforgehub.com/product/frictionless-checkout/#pricing' ); ?>" target="_blank" rel="noopener noreferrer" style="background:#10b981;color:#ffffff;padding:8px 16px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block;">Upgrade to Pro &rarr;</a>
 			</div>
 			<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;">
 				<div style="background:#1e293b;padding:12px 16px;border-radius:8px;">
