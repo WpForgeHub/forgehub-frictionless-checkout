@@ -49,6 +49,10 @@ This plugin is specifically optimized for digital, downloadable, and virtual pro
 = Is it compatible with WooCommerce HPOS? =
 Yes! It is fully tested and declares full compatibility with WooCommerce High-Performance Order Storage.
 
+== Screenshots ==
+
+1. Frictionless Checkout WooCommerce settings tab with 4-field digital checkout, IP country auto-detection, and trust badge controls.
+
 == Changelog ==
 
 = 1.1.5 =
