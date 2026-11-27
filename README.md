@@ -66,11 +66,27 @@ For software, WordPress plugins, digital downloads, and digital products, this f
 
 ---
 
+## 📸 Admin Preview
+
+<p align="center">
+  <img src="assets/screenshot-1.png" alt="ForgeHub Frictionless Checkout WordPress Admin Settings" width="100%" />
+</p>
+
+---
+
 ## 🛠️ Installation
 
 1. Upload the `forgehub-frictionless-checkout` folder to `/wp-content/plugins/`.
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Navigate to **WooCommerce -> Settings -> Frictionless Checkout** to configure options.
+
+---
+
+## 🔗 Links & Resources
+
+- **Plugin Page:** [https://wpforgehub.com/product/frictionless-checkout/](https://wpforgehub.com/product/frictionless-checkout/)
+- **Documentation & Help:** [wpforgehub.com/docs](https://wpforgehub.com/docs/)
+- **More Free WordPress Plugins:** [wpforgehub.com](https://wpforgehub.com/#products)
 
 ---
 
